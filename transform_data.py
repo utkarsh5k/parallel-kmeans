@@ -1,6 +1,6 @@
 import pandas as pd
 
-data = pd.read_csv("data/pollution_us_2000_2016.csv", header = 0)
+data = pd.read_csv("data/pollution_us_2000_2016.csv", header = 0, nrows = 10000)
 
 data.rename(columns = {'Unnamed: 0' : 'ID'}, inplace = True)
 print "Columns in the data"
@@ -32,5 +32,5 @@ CO AQI
 data['SO2 AQI'].fillna(data['SO2 AQI'].mean(), inplace = True)
 data['CO AQI'].fillna(data['CO AQI'].mean(), inplace = True)
 
-data.to_csv('data/pollution_new.csv')
+data.to_csv('data/pollution_new_small.csv')
 print "Written to CSV"
