@@ -6,7 +6,7 @@ The dataset being used for this project is [US Pollution Data](https://www.kaggl
 
 ## Checklist
 
-- [ ] Sequential k-means
+- [x] Sequential k-means
 - [ ] Parallel k-means (centre wise)
 - [ ] Parallel k-means (point wise)
 - [ ] Comparing performance
