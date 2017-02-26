@@ -114,7 +114,6 @@ void kmeans_clustering(float **dataframe, float **clusters, int nsamples, int nu
     int changed = 1, i, j, k, cluster, iter = 1;
     while(changed)
     {
-        cout << "Iteration: " << iter++ << endl;
         float distances[num_clusters], point_summation[num_clusters][dims];
         for(i = 0; i < num_clusters; i++)
             for(j = 0; j < dims; j++)
@@ -147,15 +146,15 @@ void kmeans_clustering(float **dataframe, float **clusters, int nsamples, int nu
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     char file_name[] = "data/pollution_new_small.csv";
     float **dataframe = csv_to_float_matrix(file_name);
-    int nsamples = 100000, dims = 17, num_clusters = 100;
+    int nsamples = 100000, dims = 17, num_clusters = stof(argv[1]);
     double run_time = clock();
     float **cluster_centres = init_clusters(max_values(dataframe, nsamples, dims), num_clusters, dims);
     kmeans_clustering(dataframe, cluster_centres, nsamples, num_clusters, dims);
     run_time = (clock() - run_time) / CLOCKS_PER_SEC;
-    cout<< "Total run time: "<< run_time<<endl;
+    cout<<run_time<<endl;
     return 0;
 }

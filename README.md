@@ -22,7 +22,13 @@ The original dataset 'pollution_us_2000_2016.csv' contains 17,46,661 samples. Ea
 
 Then we write 1,00,000 samples of the modified dataframe to the file 'pollution_new_small.csv'.
 
-The data used is for demonstration purposes only. Clustering accuracy is not a concern. 
+The data used is for demonstration purposes only. Clustering accuracy is not a concern.
+
+##Performance
+
+#Sequential k-means
+
+![Graph](/Performance Graphs/Sequential.png)
 
 ## Checklist
 
