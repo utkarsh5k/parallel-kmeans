@@ -26,7 +26,7 @@ The data used is for demonstration purposes only. Clustering accuracy is not a c
 
 ##Performance
 
-#Sequential k-means
+###Sequential k-means
 
 ![Graph](/Performance Graphs/Sequential.png)
 
