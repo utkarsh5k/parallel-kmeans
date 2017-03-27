@@ -29,11 +29,13 @@ The data used is for demonstration purposes only. Clustering accuracy is not a c
 Set up MPI on Ubuntu 14.04: `sudo apt-get install libcr-dev mpich2 mpich2-doc`
 
 Compiling: `mpic++ -o <executable_name> mpi_kmeans.cpp -std=c++11`
+
 Run: `mpirun -n <num_procs> <executable_name>`
 
-##Performance
 
-###Sequential k-means
+## Performance
+
+### Sequential k-means
 
 ![Graph](/Performance Graphs/Sequential.png)
 
