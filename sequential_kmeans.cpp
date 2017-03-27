@@ -4,7 +4,20 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
+#include "results_to_file.h"
 using namespace std;
+
+void write_results_to_file(float **dataframe, int nsamples)
+{
+    ofstream result_file;
+    result_file.open("Results/Sequential_results.csv");    
+    int i;
+    result_file << "Point,Cluster\n";
+    for(i = 0; i < nsamples; i++)
+    {
+        result_file<<i+1<<","<<dataframe[i][0]+1<<"\n";
+    }
+}
 
 float euclidean_distance(float point[], float centre[], int d)
 {
@@ -142,8 +155,8 @@ void kmeans_clustering(float **dataframe, float **clusters, int nsamples, int nu
             }
             //cout<< point_summation[i][0]<<endl;
         }
-
     }
+    write_results_to_file(dataframe, nsamples);
 }
 
 int main(int argc, char *argv[])

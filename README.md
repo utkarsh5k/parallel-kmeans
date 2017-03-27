@@ -32,6 +32,7 @@ Compiling: `mpic++ -o <executable_name> mpi_kmeans.cpp -std=c++11`
 
 Run: `mpirun -n <num_procs> <executable_name>`
 
+Note: Before running `sequential_kmeans.cpp` or 'mpi_kmeans.cpp`, make a folder 'Results' in the directory.
 
 ## Performance
 

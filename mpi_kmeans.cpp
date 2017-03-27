@@ -1,12 +1,29 @@
-#include<iostream>
-#include<stdlib.h>
-#include<mpi.h>
-#include<string.h>
-#include<fstream>
-#include<mpi.h>
-#include<stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <mpi.h>
+#include <string.h>
+#include <fstream>
+#include <mpi.h>
+#include <stdio.h>
+#include <time.h>
 
 using namespace std;
+
+void write_results_to_file(float **dataframe, int nsamples, int rank)
+{
+    ofstream result_file;
+    char file_name[] = "Results/MPI_results_i.csv";
+    file_name[20] = char (rank+48);
+    result_file.open(file_name);    
+    int i;
+    result_file << "Point\n";
+	for(i = 0; i < nsamples; i++)
+    {
+       	if(dataframe[i][0] != 0)
+      		result_file<<i+1<<"\n";
+   	}
+}
+
 
 float euclidean_distance(float point[], float centre[], int d)
 {
@@ -19,7 +36,7 @@ float euclidean_distance(float point[], float centre[], int d)
     return distance/d;
 }
 
-float* assign_clusters(float **dataframe, float *min_distances, float *distances, int nsamples, int dims)
+float* assign_clusters(float **dataframe, float *min_distances, float *distances, int nsamples, int dims, int rank)
 {
     int i, j, count = 0;
 	float *mean_cluster = new float[dims-1];	
@@ -29,7 +46,7 @@ float* assign_clusters(float **dataframe, float *min_distances, float *distances
 	{
 		if(min_distances[i] == distances[i])
 		{	
-			dataframe[i][0] = 1;
+			dataframe[i][0] = rank+1;
 			for(j=0; j<dims-1; j++)
 				mean_cluster[j] += dataframe[i][j+1];	
 			count++;	
@@ -145,21 +162,16 @@ int main(int argc, char *argv[])
     float *rand_max = max_values(dataframe, nsamples, dims);
 	MPI_Barrier(MPI_COMM_WORLD);
     cluster_centre = init_clusters(rand_max, dims, rank+2);
-    int m;	
-	for(m = 0; m < dims-1; m++)
-		cout<< cluster_centre[m]<<" ";
-	cout<<endl;	
 	int changed = 1, ch = 0;
 	float *min_distances = new float[nsamples];
+	double run_time = clock();
 	while(changed)
 	{
-		cout << "Iterating!\n";
 		distances = points_distance(dataframe, cluster_centre, nsamples, dims);		
 		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Reduce(distances, min_distances, nsamples, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
 		MPI_Bcast(min_distances, nsamples, MPI_FLOAT, 0, MPI_COMM_WORLD);
-		if(rank >= 0)
-			new_cluster = assign_clusters(dataframe, min_distances, distances, nsamples, dims);
+		new_cluster = assign_clusters(dataframe, min_distances, distances, nsamples, dims, rank);
 		MPI_Barrier(MPI_COMM_WORLD);
 		ch = 0;	
 		for(int i = 0; i < dims-1; i++)
@@ -175,11 +187,10 @@ int main(int argc, char *argv[])
 		MPI_Bcast(&changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
-	int count = 0, i;
-	for(i=0; i<nsamples; i++)
-		if(dataframe[i][0] == 1)
-			count++;
-	cout<< "Cluster: "<< rank << " Points: "<<count<<endl;
+	run_time = (clock() - run_time) / CLOCKS_PER_SEC;
+	if(rank == 0)
+		cout<<run_time<<endl;
+	write_results_to_file(dataframe, nsamples, rank);
 	MPI_Finalize();
 	return 0;
 }
