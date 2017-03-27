@@ -37,6 +37,7 @@ Run: `mpirun -n <num_procs> <executable_name>`
 
 ### Sequential k-means
 
+
 ![Graph](/Performance Graphs/Sequential.png)
 
 ## Checklist
