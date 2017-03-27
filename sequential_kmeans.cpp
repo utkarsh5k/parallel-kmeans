@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
-#include "results_to_file.h"
 using namespace std;
 
 void write_results_to_file(float **dataframe, int nsamples)
 {
     ofstream result_file;
-    result_file.open("Results/Sequential_results.csv");    
+    result_file.open("Results/Sequential_results.csv");
     int i;
     result_file << "Point,Cluster\n";
     for(i = 0; i < nsamples; i++)
@@ -153,7 +152,6 @@ void kmeans_clustering(float **dataframe, float **clusters, int nsamples, int nu
                     changed = 1;
                 clusters[i][j-1] = new_value;
             }
-            //cout<< point_summation[i][0]<<endl;
         }
     }
     write_results_to_file(dataframe, nsamples);
@@ -163,7 +161,7 @@ int main(int argc, char *argv[])
 {
     char file_name[] = "data/pollution_new_small.csv";
     float **dataframe = csv_to_float_matrix(file_name);
-    int nsamples = 100000, dims = 17, num_clusters = stof(argv[1]);
+    int nsamples = 10000, dims = 17, num_clusters = stof(argv[1]);
     double run_time = clock();
     float **cluster_centres = init_clusters(max_values(dataframe, nsamples, dims), num_clusters, dims);
     kmeans_clustering(dataframe, cluster_centres, nsamples, num_clusters, dims);

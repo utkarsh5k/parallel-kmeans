@@ -20,7 +20,7 @@ def make_graphs():
     plt.ylabel("Time taken")
     plt.title("Number of clusters vs Time taken: Sequential k-means")
     plt.plot(clusters, time_taken)
-    plt.savefig("Performance Graphs/Sequential.png")
+    plt.savefig("Performance/Sequential.png")
     plt.show()
 
 log_sequential_results()
