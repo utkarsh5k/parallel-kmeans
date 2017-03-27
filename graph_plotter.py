@@ -5,8 +5,18 @@ import sys
 
 colors = ['red', 'green', 'blue', 'yellow']
 
+def make_initial_graph():
+    data = pd.read_csv('data/pollution_new_small.csv', header = 0)
+    data.rename(columns = {'Unnamed: 0' : 'ID'}, inplace = True)
+    X = data['NO2 Mean']
+    Y = data['SO2 Mean']
+    plt.scatter(X, Y, c = 'black')
+    plt.xlabel("NO2 Mean")
+    plt.ylabel("SO2 Mean")
+    plt.savefig("Clustering_Images/Initial.png")
+
 def make_MPI_graph():
-    data = pd.read_csv('data/pollution_new.csv', header = 0)
+    data = pd.read_csv('data/pollution_new_small.csv', header = 0)
     data.rename(columns = {'Unnamed: 0' : 'ID'}, inplace = True)
     X = data['NO2 Mean']
     Y = data['SO2 Mean']
@@ -28,7 +38,7 @@ def make_MPI_graph():
     plt.savefig("Clustering_Images/MPI.png")
 
 def make_sequential_graph():
-    data = pd.read_csv('data/pollution_new.csv', header = 0)
+    data = pd.read_csv('data/pollution_new_small.csv', header = 0)
     data.rename(columns = {'Unnamed: 0' : 'ID'}, inplace = True)
     X = data['NO2 Mean']
     Y = data['SO2 Mean']
@@ -48,5 +58,6 @@ def make_sequential_graph():
     plt.ylabel("SO2 Mean")
     plt.savefig("Clustering_Images/Sequential.png")
 
+make_initial_graph()
 make_MPI_graph()
 make_sequential_graph()
