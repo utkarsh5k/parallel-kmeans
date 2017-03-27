@@ -24,6 +24,13 @@ Then we write 1,00,000 samples of the modified dataframe to the file 'pollution_
 
 The data used is for demonstration purposes only. Clustering accuracy is not a concern.
 
+## Running MPI on Linux. (Ubuntu 14.04): 
+
+Set up MPI on Ubuntu 14.04: `sudo apt-get install libcr-dev mpich2 mpich2-doc`
+
+Compiling: `mpic++ -o <executable_name> mpi_kmeans.cpp -std=c++11`
+Run: `mpirun -n <num_procs> <executable_name>`
+
 ##Performance
 
 ###Sequential k-means

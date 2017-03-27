@@ -22,7 +22,7 @@ float euclidean_distance(float point[], float centre[], int d)
 float* assign_clusters(float **dataframe, float *min_distances, float *distances, int nsamples, int dims)
 {
     int i, j, count = 0;
-	float *mean_cluster = new float[dims];	
+	float *mean_cluster = new float[dims-1];	
 	for(i=0; i<dims; i++)
 		mean_cluster[i] = 0;
 	for(i=0; i<nsamples; i++)
@@ -30,14 +30,14 @@ float* assign_clusters(float **dataframe, float *min_distances, float *distances
 		if(min_distances[i] == distances[i])
 		{	
 			dataframe[i][0] = 1;
-			for(j=0; j<dims; j++)
-				mean_cluster[j] += dataframe[i][j];	
+			for(j=0; j<dims-1; j++)
+				mean_cluster[j] += dataframe[i][j+1];	
 			count++;	
 		}		
 		else
 			dataframe[i][0] = 0;
 	}
-	for(j=0; j<dims; j++)
+	for(j=0; j<dims-1; j++)
 		mean_cluster[j] /= count;
 	return mean_cluster;
 }
@@ -105,12 +105,13 @@ float* max_values(float **feauture_matrix, int nsamples, int dims)
     return max_vals;
 }
 
-float* init_clusters(float *rand_max, int dims)
+float* init_clusters(float *rand_max, int dims, int seed)
 {
     float *clusters = new float[dims-1];
     for(int j = 0; j < dims-1; j++)
     {
         clusters[j] = rand_max[j] >= 1.0 ? (float) (rand() % (int) rand_max[j]) : 0.0;
+    	clusters[j] = (clusters[j] * (seed^7)) / ((seed-1)^7);
     }
     return clusters;
 }
@@ -126,8 +127,6 @@ float* points_distance(float **dataframe, float *cluster, int nsamples, int dims
 	return distances;
 }		
 
-
-
 int main(int argc, char *argv[])
 {
 	int rank, size;
@@ -136,42 +135,51 @@ int main(int argc, char *argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	int nsamples, dims;	
-	float *new_cluster = new float[dims];	
-	float *cluster_centre = new float[dims];
+	float *new_cluster = new float[dims-1];	
+	float *cluster_centre;
 	float **dataframe;	
 	float *distances;
-	if(rank != 0)
-	{
-		char file_name[] = "data/pollution_new_small.csv";
-    	dataframe = csv_to_float_matrix(file_name);
-    	nsamples = 100000, dims = 17;
-    	cluster_centre = init_clusters(max_values(dataframe, nsamples, dims), dims);
-			
-	}
-	int changed = 1;
+	char file_name[] = "data/pollution_new_small.csv";
+   	dataframe = csv_to_float_matrix(file_name);
+    nsamples = 100000, dims = 17;
+    float *rand_max = max_values(dataframe, nsamples, dims);
+	MPI_Barrier(MPI_COMM_WORLD);
+    cluster_centre = init_clusters(rand_max, dims, rank+2);
+    int m;	
+	for(m = 0; m < dims-1; m++)
+		cout<< cluster_centre[m]<<" ";
+	cout<<endl;	
+	int changed = 1, ch = 0;
 	float *min_distances = new float[nsamples];
 	while(changed)
 	{
-		if(rank != 0)
-			distances = points_distance(dataframe, cluster_centre, nsamples, dims);		
+		cout << "Iterating!\n";
+		distances = points_distance(dataframe, cluster_centre, nsamples, dims);		
+		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Reduce(distances, min_distances, nsamples, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
 		MPI_Bcast(min_distances, nsamples, MPI_FLOAT, 0, MPI_COMM_WORLD);
-		new_cluster = assign_clusters(dataframe, min_distances, distances, nsamples, dims);
-		int ch = 0;	
-		if(rank != 0)
+		if(rank >= 0)
+			new_cluster = assign_clusters(dataframe, min_distances, distances, nsamples, dims);
+		MPI_Barrier(MPI_COMM_WORLD);
+		ch = 0;	
+		for(int i = 0; i < dims-1; i++)
 		{
-			for(int i = 0; i < dims; i++)
-			{
-				if(new_cluster[i] != cluster_centre[i])
-				{	
-					ch = 1;
-				}	
-				cluster_centre[i] = new_cluster[i];
-			}
+			if(new_cluster[i] != cluster_centre[i])
+			{	
+				ch = 1;
+			}	
+			cluster_centre[i] = new_cluster[i];
 		}		
-		MPI_Reduce(&changed, &ch, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+		MPI_Reduce(&ch, &changed, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+		fflush(stdout);
 		MPI_Bcast(&changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
+	int count = 0, i;
+	for(i=0; i<nsamples; i++)
+		if(dataframe[i][0] == 1)
+			count++;
+	cout<< "Cluster: "<< rank << " Points: "<<count<<endl;
 	MPI_Finalize();
 	return 0;
 }
