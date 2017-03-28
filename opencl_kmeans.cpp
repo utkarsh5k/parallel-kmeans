@@ -132,11 +132,11 @@ int main(int argc, char *argv[])
     cl_mem d_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE, nsamples * num_clusters * sizeof(float), NULL, &status);
     cl_mem e_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE, num_clusters * sizeof(int), NULL, &status);
 
+    status = clEnqueueWriteBuffer(cq, a_mem_obj, CL_TRUE, 0, nsamples * dims * sizeof(float), dataframe, 0, NULL, NULL);
     status = clEnqueueWriteBuffer(cq, c_mem_obj, CL_TRUE, 0, (dims-1) * sizeof(float), rand_max, 0, NULL, NULL);
 
 	cl_program program = clCreateProgramWithSource(context, 1, (const char **)&src_str, (const size_t *)&s_size, &status);
     status = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
-    cout<< status << endl;
     cl_kernel kernel = clCreateKernel(program, "initialize_clusters", &status);
 	size_t global_item_size = num_clusters;
 	size_t local_item_size = 1;
@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
 
     program = clCreateProgramWithSource(context, 1, (const char **)&src_str, (const size_t *)&s_size, &status);
     status = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
-    cout<< status << endl;
     cl_kernel kernel1 = clCreateKernel(program, "calculate_distance", &status);
 
     f = fopen("new_cluster.cl", "r");
@@ -176,13 +175,12 @@ int main(int argc, char *argv[])
 
     program = clCreateProgramWithSource(context, 1, (const char **)&src_str, (const size_t *)&s_size, &status);
     status = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
-    cout<< status << endl;
     cl_kernel kernel2 = clCreateKernel(program, "get_new_cluster", &status);
 
     int changed = 1;
+    double run_time = clock();
     while(changed)
     {
-        cout<<"Iterating!" << endl;
         status = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &a_mem_obj);
     	status = clSetKernelArg(kernel1, 1, sizeof(cl_mem), &b_mem_obj);
         status = clSetKernelArg(kernel1, 2, sizeof(cl_mem), &d_mem_obj);
@@ -210,6 +208,9 @@ int main(int argc, char *argv[])
             }
         }
     }
+    run_time = (clock() - run_time) / CLOCKS_PER_SEC;
+    cout << run_time << endl;
+    status = clEnqueueReadBuffer(cq, a_mem_obj, CL_TRUE, 0, nsamples * dims * sizeof(float), dataframe, 0, NULL, NULL);
     write_results_to_file(dataframe, nsamples);
 	status = clFlush(cq);
 	status = clReleaseKernel(kernel);
