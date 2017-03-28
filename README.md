@@ -24,7 +24,7 @@ Then we write 10,000 samples of the modified dataframe to the file 'pollution_ne
 
 The data used is for demonstration purposes only. Clustering accuracy is not a concern.
 
-## Running MPI on Linux. (Ubuntu 14.04): 
+## Running MPI on Linux. (Ubuntu 14.04):
 
 Set up MPI on Ubuntu 14.04: `sudo apt-get install libcr-dev mpich2 mpich2-doc`
 
@@ -36,14 +36,13 @@ Note: Before running `sequential_kmeans.cpp` or `mpi_kmeans.cpp`, make a folder 
 
 ## Performance
 
-### Sequential k-means
+![Graph](/Performance/Comparison.png)
 
-
-![Graph](/Performance/Sequential.png)
+Both MPI and OpenCL provide similar speedup to the existing sequential algorithm. The OpenCL implementation could be parallelized more, though. I suspect that with greater number of clusters and large data, OpenCL will outperform MPI. I could only test for a few clusters due to the parallelism limitations of my laptop.  
 
 ## Checklist
 
 - [x] Sequential k-means
-- [ ] Parallel k-means (centre wise)
-- [ ] Comparing performance
-- [ ] Graphs
+- [x] Parallel k-means 
+- [x] Comparing performance
+- [x] Graphs
