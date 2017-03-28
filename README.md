@@ -38,11 +38,11 @@ Note: Before running `sequential_kmeans.cpp` or `mpi_kmeans.cpp`, make a folder 
 
 ![Graph](/Performance/Comparison.png)
 
-Both MPI and OpenCL provide similar speedup to the existing sequential algorithm. The OpenCL implementation could be parallelized more, though. I suspect that with greater number of clusters and large data, OpenCL will outperform MPI. I could only test for a few clusters due to the parallelism limitations of my laptop.  
+Both MPI and OpenCL provide similar speedup to the existing sequential algorithm. The OpenCL implementation could be parallelized more, though. I suspect that with greater number of clusters and large data, OpenCL will outperform MPI, since MPI has an overhead for message passing, which would only increase with the number of processes (clusters) and amount of data. OpenCL on the other hand, uses global memory, thus minimizing the overhead for communication. I could only test for a few clusters due to the parallelism limitations of my laptop.  
 
 ## Checklist
 
 - [x] Sequential k-means
-- [x] Parallel k-means 
+- [x] Parallel k-means
 - [x] Comparing performance
 - [x] Graphs
