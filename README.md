@@ -37,6 +37,7 @@ Note: Before running `sequential_kmeans.cpp` or `mpi_kmeans.cpp`, make a folder 
 ## Using OpenCL 
 
 Compile with: `g++ -framework OpenCL -o <executable_name> <source_file>`
+
 Run with: `./<executable_name> <num_work_items>`
 
 ## Performance
