@@ -82,7 +82,7 @@ def make_OpenCL_graph():
     plt.savefig("Clustering_Images/OpenCL.png")
 
 
-make_initial_graph()
-make_MPI_graph()
-make_sequential_graph()
+#make_initial_graph()
+#make_MPI_graph()
+#make_sequential_graph()
 make_OpenCL_graph()

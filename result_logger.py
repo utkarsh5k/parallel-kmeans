@@ -36,6 +36,7 @@ def make_graphs():
     for s, s4, m in zip(seq_times, seq_times_4, mpi_times):
         new_time = (m / s4) * s
         mpi_times_new.append(new_time)
+    print mpi_times_new
     plt.plot(clusters, mpi_times_new, c = 'green', label = 'MPI')
     plt.xlabel("Number of clusters")
     plt.ylabel("Time taken")
@@ -43,6 +44,6 @@ def make_graphs():
     plt.legend(loc = "upper left")
     plt.savefig("Performance/Comparison.png")
 
-log_opencl_vs_sequential()
-log_opencl_vs_sequential()
+#log_opencl_vs_sequential()
+#log_opencl_vs_sequential()
 make_graphs()
